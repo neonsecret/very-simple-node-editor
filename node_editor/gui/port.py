@@ -5,6 +5,7 @@ class Port(QtWidgets.QGraphicsPathItem):
     def __init__(self, parent, scene):
         super(Port, self).__init__(parent)
 
+        self.port_text_width = None
         self.radius_ = 5
         self.margin = 2
 

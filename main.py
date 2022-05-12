@@ -1,8 +1,7 @@
 import sys
+import logging
 
 from PySide2 import QtWidgets, QtCore, QtGui
-
-import logging
 
 from node_editor.gui.node_widget import NodeWidget
 from node_editor.gui.palette import palette

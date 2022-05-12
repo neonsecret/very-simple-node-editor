@@ -3,60 +3,9 @@
 from PySide2 import QtWidgets, QtGui
 
 from node_editor.gui.view import View
-from node_editor.gui.node import Node
 from node_editor.gui.node_editor import NodeEditor
 
-# import lorem
-# import random
-
-
-def create_input():
-    node = Node()
-    node.title = "A"
-    node.type_text = "input"
-    node.add_port(name="output", is_output=True)
-    node.build()
-    return node
-
-
-def create_output():
-    node = Node()
-    node.title = "A"
-    node.type_text = "output"
-    node.add_port(name="input", is_output=False)
-    node.build()
-    return node
-
-
-def create_and():
-    node = Node()
-    node.title = "AND"
-    node.type_text = "built-in"
-    node.add_port(name="input A", is_output=False)
-    node.add_port(name="input B", is_output=False)
-    node.add_port(name="output", is_output=True)
-    node.build()
-    return node
-
-
-def create_not():
-    node = Node()
-    node.title = "NOT"
-    node.type_text = "built-in"
-    node.add_port(name="input", is_output=False)
-    node.add_port(name="output", is_output=True)
-    node.build()
-    return node
-
-
-def create_nor():
-    node = Node()
-    node.title = "NOR"
-    node.type_text = "built-in"
-    node.add_port(name="input", is_output=False)
-    node.add_port(name="output", is_output=True)
-    node.build()
-    return node
+from node_editor.gui.node import NodeListGeneral
 
 
 class NodeScene(QtWidgets.QGraphicsScene):
@@ -66,7 +15,7 @@ class NodeScene(QtWidgets.QGraphicsScene):
     def dropEvent(self, e):
         # find item at these coordinates
         item = self.itemAt(e.scenePos())
-        if item.setAcceptDrops == True:
+        if item.setAcceptDrops:
             # pass on event to item at the coordinates
             try:
                 item.dropEvent(e)
@@ -95,20 +44,12 @@ class NodeWidget(QtWidgets.QWidget):
 
         self.view.request_node.connect(self.create_node)
 
+        self.nodes = NodeListGeneral().get_nodes()
+
     def create_node(self, name):
         print("creating node:", name)
 
-        if name == "Input":
-            node = create_input()
-
-        elif name == "Output":
-            node = create_output()
-        elif name == "And":
-            node = create_and()
-        elif name == "Not":
-            node = create_not()
-        elif name == "Nor":
-            node = create_nor()
+        node = self.nodes[name]()
 
         self.scene.addItem(node)
 

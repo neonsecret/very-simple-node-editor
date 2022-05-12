@@ -1,15 +1,13 @@
 from PySide2 import QtWidgets, QtCore, QtGui
+from node_editor.gui.node import NodeListGeneral
 
 
 class NodeList(QtWidgets.QListWidget):
     def __init__(self, parent=None):
         super(NodeList, self).__init__(parent)
 
-        self.addItem("Input")
-        self.addItem("Output")
-        self.addItem("And")
-        self.addItem("Not")
-        self.addItem("Nor")
+        for node in NodeListGeneral().get_nodes():
+            self.addItem(node)
 
         self.setDragEnabled(True)  # enable dragging
 
@@ -18,24 +16,16 @@ class NodeList(QtWidgets.QListWidget):
         pos = event.pos()
 
         # actions
-        delete_node = QtWidgets.QAction("Delete Node")
-        edit_node = QtWidgets.QAction("Edit Node")
-        menu.addAction(delete_node)
+        print_help = QtWidgets.QAction("Print help")
+        menu.addAction(print_help)
 
         action = menu.exec_(self.mapToGlobal(pos))
+        item_name = self.selectedItems()[0].text()
 
-        if action == delete_node:
-            item_name = self.selectedItems()[0].text()
-
-            if item_name not in ["And", "Not", "Input", "Output"]:
-                print(f"delete node: {item_name}")
-            else:
-                print("Cannot delete default nodes")
-
-        elif action == edit_node:
-            print("editing node")
-
-            # confirm to open in the editor replacing what is existing
+        if action == print_help:
+            print(f"help will be printed to the {item_name} node")
+        else:
+            print(f"{item_name} action")
 
     def mousePressEvent(self, event):
         item = self.itemAt(event.pos())

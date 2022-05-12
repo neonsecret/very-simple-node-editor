@@ -76,7 +76,7 @@ class NodeEditor(QtCore.QObject):
                     self._last_selected = None
 
             elif event.button() == QtCore.Qt.RightButton:
-                # context menu
+
                 pass
 
         elif event.type() == QtCore.QEvent.KeyPress:

@@ -1,6 +1,5 @@
 from PySide2 import QtCore, QtGui, QtWidgets, QtOpenGL
 
-from node_editor.gui.connection import Connection
 from node_editor.gui.node import Node
 
 

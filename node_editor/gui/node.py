@@ -3,6 +3,72 @@ from PySide2 import QtWidgets, QtGui, QtCore
 from node_editor.gui.port import Port
 
 
+def create_input():
+    node = Node()
+    node.title = "A"
+    node.type_text = "input"
+    node.add_port(name="output", is_output=True)
+    node.build()
+    return node
+
+
+def create_output():
+    node = Node()
+    node.title = "A"
+    node.type_text = "output"
+    node.add_port(name="input", is_output=False)
+    node.build()
+    return node
+
+
+def create_and():
+    node = Node()
+    node.title = "AND"
+    node.type_text = "built-in"
+    node.add_port(name="input A", is_output=False)
+    node.add_port(name="input B", is_output=False)
+    node.add_port(name="output", is_output=True)
+    node.build()
+    return node
+
+
+def create_not():
+    node = Node()
+    node.title = "NOT"
+    node.type_text = "built-in"
+    node.add_port(name="input", is_output=False)
+    node.add_port(name="output", is_output=True)
+    node.build()
+    return node
+
+
+def create_nor():
+    node = Node()
+    node.title = "NOR"
+    node.type_text = "built-in"
+    node.add_port(name="input", is_output=False)
+    node.add_port(name="output", is_output=True)
+    node.build()
+    return node
+
+
+class NodeListGeneral:
+    def __init__(self):
+        self.nodes = {
+            "Input": create_input,
+            "Output": create_output,
+            "And": create_and,
+            "Not": create_not,
+            "Or": create_nor
+        }
+
+    def get_nodes_list(self):
+        return self.nodes.values()
+
+    def get_nodes(self):
+        return self.nodes
+
+
 class Node(QtWidgets.QGraphicsPathItem):
     def __init__(self):
         super(Node, self).__init__()
@@ -161,31 +227,22 @@ class Node(QtWidgets.QGraphicsPathItem):
             if port.connection:
                 port.connection._do_highlight = value
                 port.connection.update_path()
-            # for connection in port.connections():
-            #     connection._do_highlight = value
-            #     connection.update_path()
 
     def contextMenuEvent(self, event):
         menu = QtWidgets.QMenu(self)
         pos = event.pos()
 
         # actions
-        delete_node = QtWidgets.QAction("Delete Node")
-        edit_node = QtWidgets.QAction("Edit Node")
-        menu.addAction(delete_node)
+        print_help = QtWidgets.QAction("Print help")
+        menu.addAction(print_help)
 
         action = menu.exec_(self.mapToGlobal(pos))
+        item_name = self.selectedItems()[0].text()
 
-        if action == delete_node:
-            item_name = self.selectedItems()[0].text()
-
-            if item_name not in ["And", "Not", "Input", "Output"]:
-                print(f"delete node: {item_name}")
-            else:
-                print("Cannot delete default nodes")
-
-        elif action == edit_node:
-            print("editing node")
+        if action == print_help:
+            print(f"help will be printed to the {item_name} node")
+        else:
+            print(f"{item_name} action")
 
             # confirm to open in the editor replacing what is existing
 
