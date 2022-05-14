@@ -1,5 +1,5 @@
 from PySide2 import QtWidgets, QtCore, QtGui
-from node_editor.gui.node import NodeListGeneral
+from pytorchgui.gui.node import NodeListGeneral
 
 
 class NodeList(QtWidgets.QListWidget):

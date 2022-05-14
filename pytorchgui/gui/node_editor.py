@@ -1,8 +1,8 @@
 from PySide2 import QtWidgets, QtCore
 
-from node_editor.gui.connection import Connection
-from node_editor.gui.node import Node
-from node_editor.gui.port import Port
+from pytorchgui.gui.connection import Connection
+from pytorchgui.gui.node import Node
+from pytorchgui.gui.port import Port
 
 
 class NodeEditor(QtCore.QObject):

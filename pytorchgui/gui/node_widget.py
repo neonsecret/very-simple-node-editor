@@ -2,10 +2,10 @@
 
 from PySide2 import QtWidgets, QtGui
 
-from node_editor.gui.view import View
-from node_editor.gui.node_editor import NodeEditor
+from pytorchgui.gui.view import View
+from pytorchgui.gui.node_editor import NodeEditor
 
-from node_editor.gui.node import NodeListGeneral
+from pytorchgui.gui.node import NodeListGeneral
 
 
 class NodeScene(QtWidgets.QGraphicsScene):

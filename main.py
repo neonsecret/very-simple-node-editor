@@ -3,9 +3,9 @@ import logging
 
 from PySide2 import QtWidgets, QtCore, QtGui
 
-from node_editor.gui.node_widget import NodeWidget
-from node_editor.gui.palette import palette
-from node_editor.gui.node_list import NodeList
+from pytorchgui.gui.node_widget import NodeWidget
+from pytorchgui.gui.palette import palette
+from pytorchgui.gui.node_list import NodeList
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -72,9 +72,9 @@ class NodeEditor(QtWidgets.QMainWindow):
         items = self.node_widget.scene.items()
         print("processing graph")
         for _item in items:
-            if str(type(_item)) == str(type(_item)) == "<class 'node_editor.gui.port.Port'>":
+            if str(type(_item)) == str(type(_item)) == "<class 'pytorchgui.gui.port.Port'>":
                 pass
-            elif str(type(_item)) == str(type(_item)) == "<class 'node_editor.gui.node.Node'>":
+            elif str(type(_item)) == str(type(_item)) == "<class 'pytorchgui.gui.node.Node'>":
                 pass
             else:
                 print(f"connection between nodes {_item._start_port.m_node._title_text} "
