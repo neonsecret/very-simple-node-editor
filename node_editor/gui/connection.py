@@ -1,4 +1,6 @@
 from PySide2 import QtWidgets, QtGui, QtCore
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QPainter
 
 
 class Connection(QtWidgets.QGraphicsPathItem):
@@ -17,13 +19,16 @@ class Connection(QtWidgets.QGraphicsPathItem):
         self.start_pos = QtCore.QPointF()
         self.end_pos = QtCore.QPointF()
 
+        self.color1 = None
+        self.color2 = None
+
         self._do_highlight = False
 
     def delete(self):
         for port in (self._start_port, self._end_port):
             if port:
                 # port.remove_connection(self)
-                port.connection = None
+                port.connection = []
 
         self.scene().removeItem(self)
 
@@ -38,12 +43,18 @@ class Connection(QtWidgets.QGraphicsPathItem):
     @start_port.setter
     def start_port(self, port):
         self._start_port = port
-        self._start_port.connection = self
+        if self._start_port.connection is not None:
+            self._start_port.connection.append(self)
+        else:
+            self._start_port.connection = [self]
 
     @end_port.setter
     def end_port(self, port):
         self._end_port = port
-        self._end_port.connection = self
+        if self._end_port.connection is not None:
+            self._end_port.connection.append(self)
+        else:
+            self._end_port.connection = [self]
 
     def nodes(self):
         return self._start_port().node(), self._end_port().node()
@@ -80,7 +91,19 @@ class Connection(QtWidgets.QGraphicsPathItem):
 
         ctr1 = QtCore.QPointF(self.start_pos.x() + dx * 0.5, self.start_pos.y())
         ctr2 = QtCore.QPointF(self.start_pos.x() + dx * 0.5, self.start_pos.y() + dy)
+
         path.cubicTo(ctr1, ctr2, self.end_pos)
+
+        if self._start_port is not None:
+            # print(f"setting color to {self._start_port.m_node.conn_type}")
+            self.color1 = self._start_port.m_node.conn_type_colors[self._start_port.m_node.conn_type]
+        else:
+            self.color1 = QtGui.QColor(62, 62, 62)
+        if self.end_port is not None:
+            # print(f"setting color to {self.end_port.m_node.conn_type}")
+            self.color2 = self.end_port.m_node.conn_type_colors[self.end_port.m_node.conn_type]
+        else:
+            self.color2 = QtGui.QColor(62, 62, 62)
 
         self.setPath(path)
 
@@ -91,7 +114,13 @@ class Connection(QtWidgets.QGraphicsPathItem):
         if self.isSelected() or self._do_highlight:
             painter.setPen(QtGui.QPen(QtGui.QColor(255, 102, 0), 3))
         else:
-            painter.setPen(QtGui.QPen(QtGui.QColor(0, 128, 255), 2))
+            gradient = QtGui.QLinearGradient(self.path().boundingRect().topLeft(),
+                                             self.path().boundingRect().topRight())
+            gradient.setColorAt(0, self.color1)
+            gradient.setColorAt(1, self.color2)
+            pen = QtGui.QPen()
+            pen.setWidth(5)
+            pen.setBrush(gradient)
+            painter.setPen(pen)
 
         painter.drawPath(self.path())
-

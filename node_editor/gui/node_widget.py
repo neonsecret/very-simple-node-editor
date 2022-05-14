@@ -47,7 +47,7 @@ class NodeWidget(QtWidgets.QWidget):
         self.nodes = NodeListGeneral().get_nodes()
 
     def create_node(self, name):
-        print("creating node:", name)
+        #print("creating node:", name)
 
         node = self.nodes[name]()
 

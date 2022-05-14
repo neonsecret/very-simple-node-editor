@@ -31,11 +31,19 @@ class NodeList(QtWidgets.QListWidget):
         item = self.itemAt(event.pos())
         name = item.text()
 
-        drag = QtGui.QDrag(self)
-        mime_data = QtCore.QMimeData()
+        if not hasattr(self, "name_exists") or name != "Input":
+            drag = QtGui.QDrag(self)
+            mime_data = QtCore.QMimeData()
 
-        mime_data.setText(name)
-        drag.setMimeData(mime_data)
-        drag.exec_()
+            mime_data.setText(name)
+            drag.setMimeData(mime_data)
+            drag.exec_()
 
-        super(NodeList, self).mousePressEvent(event)
+            super(NodeList, self).mousePressEvent(event)
+            # print("creating")
+        elif name == "Input" and not hasattr(self, "name_exists"):
+            print("blocking")
+            self.name_exists = True
+        else:
+            print("can't create another input")
+

@@ -1,29 +1,33 @@
 from PySide2 import QtWidgets, QtGui, QtCore
+from PySide2.QtWidgets import QLineEdit, QGraphicsProxyWidget, QGraphicsScene
 
 from node_editor.gui.port import Port
 
 
 def create_input():
     node = Node()
-    node.title = "A"
+    node.title = "IN"
     node.type_text = "input"
     node.add_port(name="output", is_output=True)
+    node.conn_type = "input"
     node.build()
     return node
 
 
 def create_output():
     node = Node()
-    node.title = "A"
+    node.title = "OUT"
+    node.conn_type = "output"
     node.type_text = "output"
     node.add_port(name="input", is_output=False)
     node.build()
     return node
 
 
-def create_and():
+def create_sum():
     node = Node()
-    node.title = "AND"
+    node.title = "SUM"
+    node.conn_type = "data"
     node.type_text = "built-in"
     node.add_port(name="input A", is_output=False)
     node.add_port(name="input B", is_output=False)
@@ -32,22 +36,62 @@ def create_and():
     return node
 
 
-def create_not():
+def create_divide():
     node = Node()
-    node.title = "NOT"
+    node.title = "DIVIDE"
+    node.conn_type = "data"
     node.type_text = "built-in"
-    node.add_port(name="input", is_output=False)
+    node.add_port(name="input A", is_output=False)
+    node.add_port(name="input B", is_output=False)
     node.add_port(name="output", is_output=True)
     node.build()
     return node
 
 
-def create_nor():
+def create_multiply():
     node = Node()
-    node.title = "NOR"
+    node.title = "MULT"
+    node.conn_type = "data"
     node.type_text = "built-in"
-    node.add_port(name="input", is_output=False)
+    node.add_port(name="input A", is_output=False)
+    node.add_port(name="input B", is_output=False)
     node.add_port(name="output", is_output=True)
+    node.build()
+    return node
+
+
+def create_substract():
+    node = Node()
+    node.title = "MINUS"
+    node.conn_type = "data"
+    node.type_text = "built-in"
+    node.add_port(name="input A", is_output=False)
+    node.add_port(name="input B", is_output=False)
+    node.add_port(name="output", is_output=True)
+    node.build()
+    return node
+
+
+def create_neon_node():
+    node = Node()
+    node.title = "Image 2x2"
+    node.type_text = "custom_tweaked"
+    node.conn_type = "image"
+    node.add_port(name="input 1", is_output=False)
+    node.add_port(name="input 2", is_output=False)
+    node.add_port(name="output 1", is_output=True)
+    node.add_port(name="output 2", is_output=True)
+    node.build()
+    return node
+
+
+def create_constant_node():
+    node = Node()
+    node.title = "Constant"
+    node.type_text = "built-in"
+    node.conn_type = "constant"
+    node.add_port(name="output 1", is_output=True)
+    node.value = 5
     node.build()
     return node
 
@@ -57,13 +101,13 @@ class NodeListGeneral:
         self.nodes = {
             "Input": create_input,
             "Output": create_output,
-            "And": create_and,
-            "Not": create_not,
-            "Or": create_nor
+            "Sum": create_sum,
+            "Multiply": create_multiply,
+            "Minus": create_substract,
+            "Divide": create_divide,
+            "Neon": create_neon_node,
+            "Constant": create_constant_node
         }
-
-    def get_nodes_list(self):
-        return self.nodes.values()
 
     def get_nodes(self):
         return self.nodes
@@ -80,14 +124,26 @@ class Node(QtWidgets.QGraphicsPathItem):
         self._type_text = "base"
 
         self._width = 30  # The Width of the node
-        self._height = 30  # the height of the node
+        self._height = 50  # the height of the node
         self._ports = []  # A list of ports
+        self.value = None
 
-        self.node_color = QtGui.QColor(20, 20, 20, 200)
+        self.node_color = QtGui.QColor(62, 62, 62, 255)
+
+        self.conn_type = "data"
+
+        self.conn_type_colors = {
+            "input": QtGui.QColor(155, 162, 91),
+            "data": QtGui.QColor(62, 62, 70),
+            "image": QtGui.QColor(8, 149, 115),
+            "output": QtGui.QColor(155, 162, 91),
+            "constant": QtGui.QColor(252, 98, 3)
+        }
 
         self.title_path = QtGui.QPainterPath()  # The path for the title
         self.type_path = QtGui.QPainterPath()  # The path for the type
         self.misc_path = QtGui.QPainterPath()  # a bunch of other stuff
+        self.input_fild = None
 
         self.horizontal_margin = 30  # horizontal margin
         self.vertical_margin = 15  # vertical margin
@@ -124,6 +180,9 @@ class Node(QtWidgets.QGraphicsPathItem):
         painter.drawPath(self.type_path)
         painter.drawPath(self.misc_path)
 
+        if self.title == "Constant":
+            self.value = input("Enter constant value")
+
     def add_port(self, name, is_output=False, flags=0, ptr=None):
         port = Port(self, self.scene())
         port.set_is_output(is_output)
@@ -147,9 +206,9 @@ class Node(QtWidgets.QGraphicsPathItem):
         path = QtGui.QPainterPath()  # The main path
 
         # The fonts what will be used
-        title_font = QtGui.QFont("Lucida Sans Unicode", pointSize=16)
-        title_type_font = QtGui.QFont("Lucida Sans Unicode", pointSize=8)
-        port_font = QtGui.QFont("Lucida Sans Unicode")
+        title_font = QtGui.QFont("DejaVuSans", pointSize=16)
+        title_type_font = QtGui.QFont("DejaVuSans", pointSize=8)
+        port_font = QtGui.QFont("DejaVuSans")
 
         # Get the dimentions of the title and type
         title_dim = {
@@ -224,9 +283,11 @@ class Node(QtWidgets.QGraphicsPathItem):
 
     def select_connections(self, value):
         for port in self._ports:
-            if port.connection:
-                port.connection._do_highlight = value
-                port.connection.update_path()
+            if port.connection is not None:
+                for i, conn in enumerate(port.connection):
+                    if conn:
+                        port.connection[i]._do_highlight = value
+                        port.connection[i].update_path()
 
     def contextMenuEvent(self, event):
         menu = QtWidgets.QMenu(self)
@@ -256,8 +317,10 @@ class Node(QtWidgets.QGraphicsPathItem):
         to_delete = []
 
         for port in self._ports:
-            if port.connection:
-                to_delete.append(port.connection)
+            if port.connection is not None:
+                for i, conn in enumerate(port.connection):
+                    if conn:
+                        to_delete.append(port.connection[i])
 
         for connection in to_delete:
             connection.delete()

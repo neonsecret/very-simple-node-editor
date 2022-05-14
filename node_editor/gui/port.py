@@ -79,10 +79,10 @@ class Port(QtWidgets.QGraphicsPathItem):
 
     def clear_connection(self):
         if self.connection:
-            self.connection.delete()
+            self.connection[-1].delete()
 
     def can_connect_to(self, port):
-        print(port.node(), self.node())
+        # print(port.node(), self.node())
         if not port:
             return False
         if port.node() == self.node():
@@ -100,7 +100,9 @@ class Port(QtWidgets.QGraphicsPathItem):
 
     def itemChange(self, change, value):
         if change == QtWidgets.QGraphicsItem.ItemScenePositionHasChanged:
-            if self.connection:
-                self.connection.update_start_and_end_pos()
+            if self.connection is not None:
+                for i, conn in enumerate(self.connection):
+                    if conn:
+                        conn.update_start_and_end_pos()
 
         return value
